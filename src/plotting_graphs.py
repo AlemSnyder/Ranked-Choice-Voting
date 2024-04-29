@@ -23,9 +23,10 @@ def plot_results(partial_election):
     candidates_vote_pairs = np.array([votes, candidates]).transpose()
     candidates_vote_pairs = candidates_vote_pairs[candidates_vote_pairs[:, 0].argsort()].transpose()
 
-    print(candidates_vote_pairs)
+    # print(candidates_vote_pairs)
 
     total_votes = votes.sum()
+    max_votes = votes.max()
 
     ax1.set_title("Results")
     ax1.set_xlabel(
@@ -45,10 +46,12 @@ def plot_results(partial_election):
     #ax1.bar_label(rects, large_percentiles,
     #              padding=-32, color='white', fontweight='bold')
 
-    ax1.set_yticks(order, candidates_vote_pairs[1])
+    ax1.set_yticks(order, np.array(candidates_vote_pairs[1], dtype = int))
 
-    ax1.set_xlim([0, 60])
-    ax1.set_xticks([0, 10, 20, 30, 40, 50, 60])
+    ticks = [10 * x for x in range( int (max_votes * 10 / total_votes) + 1) ]
+
+    ax1.set_xlim([0, ticks[-1] + 10])
+    ax1.set_xticks(ticks)
     ax1.xaxis.grid(True, linestyle='--', which='major',
                    color='grey', alpha=.25)
     ax1.axvline(50, color='grey', alpha=0.25)  # median position
