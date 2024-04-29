@@ -5,7 +5,7 @@ def vote(population, candidates) -> np.array:
     for i in range (len(population)):
         preference = population[i]
         order = [x for x in range(len(candidates))]
-        order.sort( key = lambda x : np.dot(preference, candidates[x]))
+        order.sort( key = lambda x : np.linalg.norm(preference - candidates[x]))
         out[i] = order
 
     return out
