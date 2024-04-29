@@ -36,7 +36,12 @@ def plot_results(partial_election):
 
     # percentiles = [score.percentile for score in scores_by_test.values()]
 
-    rects = ax1.barh(order, candidates_vote_pairs[0] / total_votes * 100, align='center', height=0.5)
+    color = ["tab:blue" for x in candidates]
+    color[0] = "tab:red"
+    if (candidates_vote_pairs[0][-1] / total_votes > .5):
+        color[-1] = "tab:green"
+
+    rects = ax1.barh(order, candidates_vote_pairs[0] / total_votes * 100, align='center', height=0.5, color = color)
     # Partition the percentile values to be able to draw large numbers in
     # white within the bar, and small numbers in black outside the bar.
     #large_percentiles = [to_ordinal(p) if p > 40 else '' for p in percentiles]
