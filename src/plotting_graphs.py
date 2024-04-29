@@ -11,6 +11,62 @@ def weakest_candidate(election_tally):
             candidate = c
     return candidate
 
+def plot_results(partial_election):
+    fig, ax1 = plt.subplots(figsize=(9, 7), layout='constrained')
+    fig.canvas.manager.set_window_title('Partial Election results')
+
+
+    candidates = list(partial_election.keys())
+    votes = np.fromiter(partial_election.values(), dtype = float )
+    order = np.arange(len(candidates), dtype = int )
+
+    candidates_vote_pairs = np.array([votes, candidates]).transpose()
+    candidates_vote_pairs = candidates_vote_pairs[candidates_vote_pairs[:, 0].argsort()].transpose()
+
+    print(candidates_vote_pairs)
+
+    total_votes = votes.sum()
+
+    ax1.set_title("Results")
+    ax1.set_xlabel(
+        'Popular Vote\n'
+        f'Number of Voters: {total_votes}')
+
+
+    # percentiles = [score.percentile for score in scores_by_test.values()]
+
+    rects = ax1.barh(order, candidates_vote_pairs[0] / total_votes * 100, align='center', height=0.5)
+    # Partition the percentile values to be able to draw large numbers in
+    # white within the bar, and small numbers in black outside the bar.
+    #large_percentiles = [to_ordinal(p) if p > 40 else '' for p in percentiles]
+    #small_percentiles = [to_ordinal(p) if p <= 40 else '' for p in percentiles]
+    #ax1.bar_label(rects, small_percentiles,
+    #              padding=5, color='black', fontweight='bold')
+    #ax1.bar_label(rects, large_percentiles,
+    #              padding=-32, color='white', fontweight='bold')
+
+    ax1.set_yticks(order, candidates_vote_pairs[1])
+
+    ax1.set_xlim([0, 60])
+    ax1.set_xticks([0, 10, 20, 30, 40, 50, 60])
+    ax1.xaxis.grid(True, linestyle='--', which='major',
+                   color='grey', alpha=.25)
+    ax1.axvline(50, color='grey', alpha=0.25)  # median position
+
+    # Set the right-hand Y-axis ticks and labels
+    #ax2 = ax1.twinx()
+    # Set equal limits on both yaxis so that the ticks line up
+    #ax2.set_ylim(ax1.get_ylim())
+
+    # Set the tick locations and labels
+    #ax2.set_yticks( NO TICKS
+    #    np.arange(len(scores_by_test)),
+    #    labels=[format_score(score) for score in scores_by_test.values()])
+
+    # ax2.set_ylabel('Test Scores')
+
+    plt.show()
+
 def analyze_election(votes, display = False):
     num_voters, num_candidates = votes.shape
 
@@ -26,6 +82,7 @@ def analyze_election(votes, display = False):
         if display:
             print("Instant runoff result")
             print(partial_election)
+            plot_results(partial_election)
             
         lowest_candidate = weakest_candidate(partial_election)
         if display:
