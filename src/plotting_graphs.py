@@ -87,22 +87,30 @@ def plot_results(partial_election):
 
     plt.show()
 
+def get_partial_elections(votes, runoff_candidates = None, display = False):
+    if runoff_candidates is None:
+        runoff_candidates = [x for x in range(votes.shape[1])]
+
+    partial_election = {x : 0 for x in runoff_candidates} # crate dictionary
+    for ballot in votes:
+        for candidate in ballot:
+            if candidate in partial_election:
+                partial_election[candidate] += 1
+                break
+    if display:
+        print("Instant runoff result")
+        print(partial_election)
+        plot_results(partial_election)
+
+    return partial_election
+
 def analyze_election(votes, display = False):
     num_voters, num_candidates = votes.shape
 
     runoff_candidates = [x for x in range(num_candidates)]
 
     while len(runoff_candidates) > 1:
-        partial_election = {x : 0 for x in runoff_candidates}
-        for ballot in votes:
-            for candidate in ballot:
-                if candidate in partial_election:
-                    partial_election[candidate] += 1
-                    break
-        if display:
-            print("Instant runoff result")
-            print(partial_election)
-            plot_results(partial_election)
+        partial_election = get_partial_elections(votes, runoff_candidates, display)
             
         lowest_candidate = weakest_candidate(partial_election)
         if display:
@@ -119,6 +127,6 @@ if __name__ == "__main__":
     pop = population_preff.random_pref(1000, 21)
     candidates = population_preff.random_pref(10, 21)
 
-    votes = vote_tallie.vote(pop, candidates)
+    votes = vote_tallie.vote_optimal(pop, candidates)
 
     print(analyze_election(votes, True))

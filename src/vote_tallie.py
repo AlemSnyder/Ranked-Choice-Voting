@@ -1,6 +1,11 @@
 import numpy as np
 
-def vote(population, candidates) -> np.array:
+
+def vote_optimal(population, candidates) -> np.array:
+    """
+    Calculate vote totals assuming everyone ranks all candidates, and rank
+    based on closeness of political values.
+    """
     out = np.zeros((population.shape[0], candidates.shape[0]))
     for i in range (len(population)):
         preference = population[i]
@@ -15,6 +20,6 @@ if __name__ == "__main__":
     pop = population_preff.random_pref(20)
     candidates = population_preff.random_pref(7)
 
-    votes = vote(pop, candidates)
+    votes = vote_optimal(pop, candidates)
 
     print(votes)
