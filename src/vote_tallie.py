@@ -1,6 +1,15 @@
 import numpy as np
+from numba import njit
+import numba as nb
 
+@njit
+def frobenius_norm(a):
+    norms = np.empty(a.shape[0], dtype=a.dtype)
+    for i in nb.prange(a.shape[0]):
+        norms[i] = np.linalg.norm(a[i,:])
+    return norms
 
+@njit(parallel = True)
 def vote_optimal(population, candidates) -> np.array:
     """
     Calculate vote totals assuming everyone ranks all candidates, and rank
@@ -9,16 +18,17 @@ def vote_optimal(population, candidates) -> np.array:
     out = np.zeros((population.shape[0], candidates.shape[0]))
     for i in range (len(population)):
         preference = population[i]
-        order = [x for x in range(len(candidates))]
-        order.sort( key = lambda x : np.linalg.norm(preference - candidates[x]))
-        out[i] = order
+
+        goodness = frobenius_norm(candidates - preference)
+
+        out[i] = np.argsort(goodness)
 
     return out
 
 if __name__ == "__main__":
     import population_preff
-    pop = population_preff.random_pref(20)
-    candidates = population_preff.random_pref(7)
+    pop = population_preff.random_pref(10000, 3)
+    candidates = population_preff.random_pref(7, 3)
 
     votes = vote_optimal(pop, candidates)
 
