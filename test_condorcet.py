@@ -7,7 +7,7 @@ import numpy as np
 population_size = 1000
 candidate_size = 10
 
-preferences = 21
+preferences = 3
 
 N = 100
 

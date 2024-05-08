@@ -3,6 +3,29 @@ the number of preferences should be much higher than the number of candidates
 TODO:
     Comments
 
-    analyze in this assumption
-        what % of the time does the winning candidate win the most number of
-        votes in the first election/ win if only first and second of first run?
+
+
+-hi
+ranked choice
+prev
+new york primary
+note people who say they understand ranked choice
+note about this should be good
+actual turn out of new york election / compare with other elections
+
+-show general code idea
+-assumptions
+-2D map
+-ranked choice elections analysis
+
+-first choice vs ranked choice for best candidate
+
+-will this change for different assumptions
+-number of candidates / number of political positions
+
+-effect on turnout if there is a candidate close to own position
+-will those bring voters
+-will those voters matter
+
+
+
