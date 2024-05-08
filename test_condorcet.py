@@ -43,8 +43,6 @@ for _ in range(N):
 
     condorcet_winner = analyze.condorcet_winner(votes)
 
-    #totals[first_round_ranked_candidates.index(ranked_choice_winner)] += 1
-
     condorcet_proxy = sorted(candidate_ids, key = lambda x : np.linalg.norm(candidates[x] - average_vote), reverse=False)
 
     if ranked_choice_winner == condorcet_winner:
