@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import typing
+import numba
 
 SMALL_SIZE = 16
 MEDIUM_SIZE = 20
@@ -19,6 +19,15 @@ def weakest_candidate(election_tally):
     votes = np.inf
     for c, v in election_tally.items():
         if v < votes:
+            votes = v
+            candidate = c
+    return candidate
+
+def strongest_candidate(election_tally):
+    candidate = -1
+    votes = -np.inf
+    for c, v in election_tally.items():
+        if v > votes:
             votes = v
             candidate = c
     return candidate
@@ -119,6 +128,23 @@ def analyze_election(votes, display = False):
 
     return runoff_candidates[0]
 
+def condorcet_winner(votes):
+    num_voters, num_candidates = votes.shape
+    x = 0
+    y = 1
+    while x != y:
+        partial_election = get_partial_elections(votes, [x, y])
+        out = strongest_candidate(partial_election)
+        if out == x:
+            y += 1
+            y = y % num_candidates
+        else:
+            if x < y:
+                return None
+            else:
+                x = y
+                y = x + 1
+    return x
 
 if __name__ == "__main__":
     import vote_tallie
