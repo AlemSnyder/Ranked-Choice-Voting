@@ -103,6 +103,8 @@ def plot_results(partial_election, save = False):
 def get_partial_elections(votes, runoff_candidates = None, display = False):
     if runoff_candidates is None:
         runoff_candidates = [x for x in range(votes.shape[1])]
+    if type(runoff_candidates) is int:
+        runoff_candidates = [x for x in range(runoff_candidates)]
 
     partial_election = {x : 0 for x in runoff_candidates} # crate dictionary
     for ballot in votes:
@@ -120,7 +122,9 @@ def get_partial_elections(votes, runoff_candidates = None, display = False):
 
 def get_partial_elections_2(votes, pop, candidates, runoff_candidates = None, display = False):
     if runoff_candidates is None:
-        runoff_candidates = [x for x in range(votes.shape[1])]
+        runoff_candidates = [x for x in range(candidates.shape[1])]
+    if type(runoff_candidates) is int:
+        runoff_candidates = [x for x in range(runoff_candidates)]
 
     num_voters, num_candidates = votes.shape
 
@@ -128,11 +132,16 @@ def get_partial_elections_2(votes, pop, candidates, runoff_candidates = None, di
     partial_election = {x : 0 for x in runoff_candidates} # crate dictionary
     top_candidates = []
     for ballot in votes:
+        casts_vote = False
         for candidate in ballot:
             if candidate in partial_election:
                 partial_election[candidate] += 1
                 top_candidates.append(candidate)
+                casts_vote = True
                 break
+        if not casts_vote:
+            top_candidates.append(len(ballot) + 4)
+
     if display:
         print("Instant runoff result")
         print(partial_election)
@@ -151,8 +160,8 @@ def get_partial_elections_2(votes, pop, candidates, runoff_candidates = None, di
 
     return partial_election
 
-def analyze_election(votes, display = False):
-    num_voters, num_candidates = votes.shape
+def analyze_election(votes, num_candidates, display = False):
+    num_voters, _ = votes.shape
 
     runoff_candidates = [x for x in range(num_candidates)]
 
@@ -166,8 +175,8 @@ def analyze_election(votes, display = False):
 
     return runoff_candidates[0]
 
-def analyze_election_2(votes, pop, candidates, display = False):
-    num_voters, num_candidates = votes.shape
+def analyze_election_2(votes, num_candidates, pop, candidates, display = False):
+    num_voters, _ = votes.shape
 
     runoff_candidates = [x for x in range(num_candidates)]
 

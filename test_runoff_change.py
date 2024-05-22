@@ -5,9 +5,9 @@ import src.vote_tallie as tale
 population_size = 1000
 candidate_size = 10
 
-preferences = 21
+preferences = 3
 
-N = 10000
+N = 1000
 #total = 0 # number of runs where the top candidate wins out right
 # 80% of the time the first winner will stay the winner
 
@@ -33,7 +33,7 @@ for _ in range(N):
 
     top_candidate = first_round_ranked_candidates[0]
 
-    ranked_choice_winner = analyze.analyze_election(votes)
+    ranked_choice_winner = analyze.analyze_election(votes, candidate_size)
 
     # print(top_candidate, ranked_choice_winner)
 
@@ -58,3 +58,4 @@ print(totals)
 
 # {0: 8292, 1: 1324, 2: 278, 3: 77, 4: 23, 5: 4, 6: 1, 7: 1, 8: 0, 9: 0}
 # {0: 8311, 1: 1284, 2: 322, 3: 62, 4: 16, 5: 4, 6: 1, 7: 0, 8: 0, 9: 0}
+# {0: 430, 1: 223, 2: 133, 3: 87, 4: 54, 5: 37, 6: 21, 7: 12, 8: 3, 9: 0}

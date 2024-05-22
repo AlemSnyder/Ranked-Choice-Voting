@@ -1,4 +1,5 @@
 # compiled python
 *.pyc
+*midterm_plots
 
 plots

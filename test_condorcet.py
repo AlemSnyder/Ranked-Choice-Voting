@@ -12,6 +12,7 @@ preferences = 3
 N = 100
 
 totals = 0#{x : 0 for x in range(candidate_size)}
+total_con_wta = 0
 
 totals_none = 0
 
@@ -39,7 +40,7 @@ for _ in range(N):
 
     top_candidate = first_round_ranked_candidates[0]
 
-    ranked_choice_winner = analyze.analyze_election(votes)
+    ranked_choice_winner = analyze.analyze_election(votes, candidate_size)
 
     condorcet_winner = analyze.condorcet_winner(votes)
 
@@ -47,6 +48,8 @@ for _ in range(N):
 
     if ranked_choice_winner == condorcet_winner:
         totals += 1
+    if top_candidate == condorcet_winner:
+        total_con_wta +=1
     if condorcet_winner is None:
         totals_none +=1
 
@@ -59,6 +62,7 @@ for _ in range(N):
     mean_dist_from_average_icp += np.linalg.norm(candidates[condorcet_proxy[-1]] - average_vote)
 
 print("chooses best winner", totals)
+print("chooses best winner wta", total_con_wta)
 print("No clear", totals_none)
 
 print("Position", position)
@@ -75,3 +79,13 @@ delta = mean_dist_from_average_icp / N - mean_dist_from_average_ccp / N
 print("Winner take all", (mean_dist_from_average_wta / N - min) / delta * 100, "%")
 print("Ranked choice", (mean_dist_from_average_rkc / N - min) / delta * 100, "%")
 
+# chooses best winner 6
+# No clear 94
+# Position {0: 76, 1: 15, 2: 4, 3: 4, 4: 1, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0}
+# Top Candidate Position {0: 27, 1: 32, 2: 12, 3: 9, 4: 5, 5: 9, 6: 2, 7: 2, 8: 1, 9: 1}
+# mean loss winner take all 0.35443989790754826
+# mean loss ranked choice 0.2713243674626499
+# mean loss best candidate 0.24850763742519905
+# mean loss worst candidate 0.6739238875743753
+# Winner take all 24.900849566795596 %
+# Ranked choice 5.363389393200172 %
