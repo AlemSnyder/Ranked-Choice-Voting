@@ -32,6 +32,7 @@ def strongest_candidate(election_tally):
             candidate = c
     return candidate
 
+# plots the election
 def plot_results(partial_election, save = False):
     fig, ax1 = plt.subplots(figsize=(9, 7), layout='constrained')
     fig.canvas.manager.set_window_title('Partial Election results')
@@ -100,37 +101,10 @@ def plot_results(partial_election, save = False):
         plt.savefig(f"plots/tally_{ len(partial_election) }.png")
     plt.clf()
 
-def get_partial_elections(votes, runoff_candidates = None, display = False):
-    if runoff_candidates is None:
-        runoff_candidates = [x for x in range(votes.shape[1])]
-    if type(runoff_candidates) is int:
-        runoff_candidates = [x for x in range(runoff_candidates)]
+def get_partial_elections(votes, runoff_candidates, pop = None, candidates = None, display = False):
 
     partial_election = {x : 0 for x in runoff_candidates} # crate dictionary
-    for ballot in votes:
-        for candidate in ballot:
-            if candidate in partial_election:
-                partial_election[candidate] += 1
-                break
-    if display:
-        print("Instant runoff result")
-        print(partial_election)
-        plot_results(partial_election)
-
-    return partial_election
-
-
-def get_partial_elections_2(votes, pop, candidates, runoff_candidates = None, display = False):
-    if runoff_candidates is None:
-        runoff_candidates = [x for x in range(candidates.shape[1])]
-    if type(runoff_candidates) is int:
-        runoff_candidates = [x for x in range(runoff_candidates)]
-
-    num_voters, num_candidates = votes.shape
-
-
-    partial_election = {x : 0 for x in runoff_candidates} # crate dictionary
-    top_candidates = []
+    top_candidates = [] # who each voter is voting for if -1 then None
     for ballot in votes:
         casts_vote = False
         for candidate in ballot:
@@ -140,33 +114,35 @@ def get_partial_elections_2(votes, pop, candidates, runoff_candidates = None, di
                 casts_vote = True
                 break
         if not casts_vote:
-            top_candidates.append(len(ballot) + 4)
+            top_candidates.append(-1)
 
     if display:
         print("Instant runoff result")
         print(partial_election)
         plot_results(partial_election, True)
 
-        plt.scatter(pop[:, 0], pop[:, 1], s = 4, c = top_candidates, cmap = "tab10")
+        if not pop is None and not candidates is None:
 
-        candidates_array = np.array(runoff_candidates)
-        available_positions = candidates[candidates_array]
+            plt.scatter(pop[:, 0], pop[:, 1], s = 4, c = top_candidates, cmap = "tab10")
 
-        plt.scatter(available_positions[:,0], available_positions[:,1], s = 50, c = runoff_candidates, cmap = "tab10")
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.savefig(f"plots/scatter_{ len(partial_election) }.png")
-        plt.clf()
+            candidates_array = np.array(runoff_candidates)
+            available_positions = candidates[candidates_array]
+
+            plt.scatter(available_positions[:,0], available_positions[:,1], s = 50, c = runoff_candidates, cmap = "tab10")
+            plt.gca().set_aspect('equal', adjustable='box')
+            plt.savefig(f"plots/scatter_{ len(partial_election) }.png")
+            plt.clf()
 
 
     return partial_election
 
-def analyze_election(votes, num_candidates, display = False):
-    num_voters, _ = votes.shape
+def analyze_election(votes, num_candidates, pop = None, candidates = None, display = False):
+    #num_voters, ballot_length = votes.shape
 
     runoff_candidates = [x for x in range(num_candidates)]
 
     while len(runoff_candidates) > 1:
-        partial_election = get_partial_elections(votes, runoff_candidates, display)
+        partial_election = get_partial_elections(votes, runoff_candidates, pop, candidates, display)
             
         lowest_candidate = weakest_candidate(partial_election)
         if display:
@@ -175,21 +151,9 @@ def analyze_election(votes, num_candidates, display = False):
 
     return runoff_candidates[0]
 
-def analyze_election_2(votes, num_candidates, pop, candidates, display = False):
-    num_voters, _ = votes.shape
-
-    runoff_candidates = [x for x in range(num_candidates)]
-
-    while len(runoff_candidates) > 1:
-        partial_election = get_partial_elections_2(votes, pop, candidates, runoff_candidates, display)
-            
-        lowest_candidate = weakest_candidate(partial_election)
-        if display:
-            print("removing lowest candidate", lowest_candidate)
-        runoff_candidates.remove(lowest_candidate)
-
-    return runoff_candidates[0]
-
+# Condorcet winner does not work if every candidate is not ranked
+# every candidate must be ranked
+# need this information
 def condorcet_winner(votes):
     num_voters, num_candidates = votes.shape
     x = 0
@@ -212,9 +176,11 @@ if __name__ == "__main__":
     import vote_tallie
     import population_preff
 
+    num_candidates = 10
+
     pop = population_preff.random_pref(1000, 21)
-    candidates = population_preff.random_pref(10, 21)
+    candidates = population_preff.random_pref(num_candidates, 21)
 
     votes = vote_tallie.vote_optimal(pop, candidates)
 
-    print(analyze_election(votes, True))
+    print("Winning candidate:", analyze_election(votes, num_candidates, pop = pop, candidates = candidates, display = True))
