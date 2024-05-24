@@ -23,7 +23,7 @@ first_round_ranked_candidates.sort(key = lambda x : first_round[x], reverse=True
 
 top_candidate = first_round_ranked_candidates[0]
 
-ranked_choice_winner = analyze.analyze_election_2(votes, candidate_size, pop, candidates, True)
+ranked_choice_winner = analyze.analyze_election(votes, candidate_size, pop, candidates, True)
 
 totals[first_round_ranked_candidates.index(ranked_choice_winner)] += 1
 
