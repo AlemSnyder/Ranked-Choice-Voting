@@ -46,8 +46,8 @@ def vote_name_recognition(population, candidates) -> np.array:
 
 if __name__ == "__main__":
     import population_preff
-    pop = population_preff.random_pref(10000, 3)
-    candidates = population_preff.random_pref(7, 3)
+    pop = population_preff.uniform_pref(10000, 3)
+    candidates = population_preff.uniform_pref(7, 3)
 
     votes = vote_optimal(pop, candidates)
 

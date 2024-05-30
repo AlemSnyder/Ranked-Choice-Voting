@@ -17,8 +17,8 @@ N = 1000
 totals = {x : 0 for x in range(candidate_size)}
 
 for _ in range(N):
-    pop = pref.random_pref(population_size, preferences)
-    candidates = pref.random_pref(candidate_size, preferences)
+    pop = pref.uniform_pref(population_size, preferences)
+    candidates = pref.uniform_pref(candidate_size, preferences)
 
     votes = tale.vote_optimal(pop, candidates)
 

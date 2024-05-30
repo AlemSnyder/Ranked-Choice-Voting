@@ -25,8 +25,8 @@ mean_dist_from_average_ccp = 0
 mean_dist_from_average_icp = 0
 
 for _ in range(N):
-    pop = pref.random_pref(population_size, preferences)
-    candidates = pref.random_pref(candidate_size, preferences)
+    pop = pref.uniform(population_size, preferences)
+    candidates = pref.uniform(candidate_size, preferences)
 
     candidate_ids = [x for x in range(candidate_size)]
 

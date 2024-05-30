@@ -178,8 +178,8 @@ if __name__ == "__main__":
 
     num_candidates = 10
 
-    pop = population_preff.random_pref(1000, 21)
-    candidates = population_preff.random_pref(num_candidates, 21)
+    pop = population_preff.uniform_pref(1000, 21)
+    candidates = population_preff.uniform_pref(num_candidates, 21)
 
     votes = vote_tallie.vote_optimal(pop, candidates)
 

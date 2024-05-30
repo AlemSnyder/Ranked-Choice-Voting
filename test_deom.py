@@ -12,8 +12,8 @@ preferences = 2
 
 totals = {x : 0 for x in range(candidate_size)}
 
-pop = pref.uniform_pref(population_size, preferences)
-candidates = pref.uniform_pref(candidate_size, preferences)
+pop = pref.normal_pref(population_size, preferences)
+candidates = pref.normal_pref(candidate_size, preferences)
 
 votes = tale.vote_name_recognition(pop, candidates)
 
