@@ -10,7 +10,7 @@ def frobenius_norm(a):
     return norms
 
 @njit(parallel = True)
-def vote_optimal(population, candidates) -> np.array:
+def vote_optimal(population, candidates, ranked_positions = -1) -> np.array:
     """
     Calculate vote totals assuming everyone ranks all candidates, and rank
     based on closeness of political values.
@@ -23,7 +23,7 @@ def vote_optimal(population, candidates) -> np.array:
 
         out[i] = np.argsort(goodness)
 
-    return out
+    return out[:, 0:ranked_positions]
 
 @njit(parallel = True)
 def vote_name_recognition(population, candidates) -> np.array:
@@ -40,7 +40,7 @@ def vote_name_recognition(population, candidates) -> np.array:
 
         out[i] = np.argsort(goodness)
 
-    print(out[:, 0:3])
+    # print(out[:, 0:3])
 
     return out[:, 0:3]
 

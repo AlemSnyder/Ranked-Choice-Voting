@@ -34,7 +34,7 @@ for _ in range(N):
 
     average_vote = pop.mean(axis=0)
 
-    first_round = analyze.get_partial_elections(votes)
+    first_round = analyze.get_partial_elections(votes, candidate_ids)
     first_round_ranked_candidates = [x for x in first_round.keys()]
     first_round_ranked_candidates.sort(key = lambda x : first_round[x], reverse=True)
 

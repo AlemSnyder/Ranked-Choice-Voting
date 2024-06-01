@@ -17,7 +17,9 @@ candidates = pref.normal_pref(candidate_size, preferences)
 
 votes = tale.vote_name_recognition(pop, candidates)
 
-first_round = analyze.get_partial_elections(votes, candidate_size)
+candidate_ids = [x for x in range(candidate_size)]
+
+first_round = analyze.get_partial_elections(votes, candidate_ids)
 first_round_ranked_candidates = [x for x in first_round.keys()]
 first_round_ranked_candidates.sort(key = lambda x : first_round[x], reverse=True)
 
