@@ -16,8 +16,6 @@ N = 1
 #total_top_candidate = 0
 #total_top_two = 0
 
-totals = {x : 0 for x in range(candidate_size)}
-
 for _ in range(N):
     pop = pref.uniform_pref(population_size, preferences)
     pop_duty = np.random.uniform(0,1, population_size)
@@ -34,7 +32,9 @@ for _ in range(N):
     top_candidate = first_round_ranked_candidates[0]
 
     total_meaningful_votes = first_round[first_round_ranked_candidates[0]] + first_round[first_round_ranked_candidates[1]]
-    total_votes = sum(first_round)
+    total_votes = 0
+    for key in first_round:
+        total_votes += first_round[key]
 
     print("Total Votes:", total_votes)
     print("Percent of Population:", total_votes / population_size * 100)
@@ -60,7 +60,3 @@ for _ in range(N):
 
     print("Total Votes for First and Second place Candidate:", total_meaningful_votes)
     print("Percent of Meaningful Participation:", total_meaningful_votes / population_size * 100)
-
-    totals[first_round_ranked_candidates.index(ranked_choice_winner)] += 1
-
-print(totals)

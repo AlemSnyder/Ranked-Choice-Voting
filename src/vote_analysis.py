@@ -76,7 +76,7 @@ def total_participants(votes: np.ndarray) -> int:
     first_choice = votes[:, 0]
     first_choice = first_choice[np.logical_not(np.isnan(first_choice))]
 
-    return first_choice.size[0]
+    return first_choice.shape[0]
 
 # Condorcet winner does not work if every candidate is not ranked
 # every candidate must be ranked
