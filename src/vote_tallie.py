@@ -26,7 +26,7 @@ def vote_optimal(population, candidates, ranked_positions = -1) -> np.array:
     return out[:, 0:ranked_positions]
 
 @njit(parallel = True)
-def vote_name_recognition(population, candidates) -> np.array:
+def vote_name_recognition(population, candidates, ranked_positions = -1) -> np.array:
     """
     Calculate vote totals assuming everyone ranks all candidates, and rank
     based on closeness of political values.
@@ -42,7 +42,7 @@ def vote_name_recognition(population, candidates) -> np.array:
 
     # print(out[:, 0:3])
 
-    return out[:, 0:3]
+    return out[:, 0:ranked_positions]
 
 if __name__ == "__main__":
     import population_preff
