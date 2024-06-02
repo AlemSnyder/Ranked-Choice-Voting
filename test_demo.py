@@ -1,5 +1,5 @@
 import src.population_preff as pref
-import src.plotting_graphs as analyze
+import src.vote_analysis as analyze
 import src.vote_tallie as tale
 
 import numpy as np

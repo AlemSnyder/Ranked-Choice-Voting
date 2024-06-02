@@ -32,7 +32,8 @@ def vote_name_recognition(population, candidates, ranked_positions = -1) -> np.a
     based on the logarithm of the closeness of political values. and a name recognition term.
     """
     name_recognition = np.arange(candidates.shape[0]) / 10
-    out = np.zeros((population.shape[0], candidates.shape[0]))
+    out = np.zeros((population.shape[0], candidates.shape[0]), dtype=np.int8) # change to higher value if 
+    # more than 120 candidates are needed
     for i in range (len(population)):
         preference = population[i]
 

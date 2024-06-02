@@ -1,7 +1,10 @@
 import numpy as np
 import numba
 
-import plotting_graphs
+if __name__ == "__main__":
+    import plotting_graphs
+else:
+    from . import plotting_graphs
 
 def weakest_candidate(election_tally):
     candidate = -1
@@ -48,11 +51,12 @@ def get_partial_elections(votes, runoff_candidates, pop = None, candidates = Non
 
     return partial_election
 
-def analyze_election(votes, num_candidates, pop = None, candidates = None, display = False):
+def analyze_election(votes, num_candidates, pop = None, candidates = None, display = False, PE = None):
     #num_voters, ballot_length = votes.shape
 
     runoff_candidates = [x for x in range(num_candidates)]
 
+    partial_election = {}
     while len(runoff_candidates) > 1:
         partial_election = get_partial_elections(votes, runoff_candidates, pop, candidates, display)
             
@@ -61,7 +65,18 @@ def analyze_election(votes, num_candidates, pop = None, candidates = None, displ
             print("removing lowest candidate", lowest_candidate)
         runoff_candidates.remove(lowest_candidate)
 
+    if not PE is None:
+        for key in partial_election:
+            PE[key] = partial_election[key]
+
     return runoff_candidates[0]
+
+def total_participants(votes: np.ndarray) -> int:
+
+    first_choice = votes[:, 0]
+    first_choice = first_choice[np.logical_not(np.isnan(first_choice))]
+
+    return first_choice.size[0]
 
 # Condorcet winner does not work if every candidate is not ranked
 # every candidate must be ranked
