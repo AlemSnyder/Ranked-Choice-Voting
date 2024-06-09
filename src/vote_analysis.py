@@ -1,12 +1,12 @@
 import numpy as np
-import numba
+from numba import njit
 
 if __name__ == "__main__":
     import plotting_graphs
 else:
     from . import plotting_graphs
 
-def weakest_candidate(election_tally):
+def weakest_candidate(election_tally) -> int:
     candidate = -1
     votes = np.inf
     for c, v in election_tally.items():
@@ -15,7 +15,7 @@ def weakest_candidate(election_tally):
             candidate = c
     return candidate
 
-def strongest_candidate(election_tally):
+def strongest_candidate(election_tally) -> int:
     candidate = -1
     votes = -np.inf
     for c, v in election_tally.items():
@@ -51,18 +51,28 @@ def get_partial_elections(votes, runoff_candidates, pop = None, candidates = Non
 
     return partial_election
 
-def analyze_election(votes, num_candidates, pop = None, candidates = None, display = False, PE = None):
+def get_partial_elections_fast(votes, runoff_candidates, pop = None, candidates = None):
+
+    partial_election = {x : 0 for x in runoff_candidates} # crate dictionary
+    for ballot in votes:
+        for candidate in ballot:
+            if candidate in partial_election:
+                partial_election[candidate] += 1
+                break
+
+    return partial_election
+
+def analyze_election(votes, num_candidates, pop = None, candidates = None, PE = None):
     #num_voters, ballot_length = votes.shape
 
     runoff_candidates = [x for x in range(num_candidates)]
 
     partial_election = {}
     while len(runoff_candidates) > 1:
-        partial_election = get_partial_elections(votes, runoff_candidates, pop, candidates, display)
+        partial_election = get_partial_elections_fast(votes, runoff_candidates, pop, candidates)
             
         lowest_candidate = weakest_candidate(partial_election)
-        if display:
-            print("removing lowest candidate", lowest_candidate)
+
         runoff_candidates.remove(lowest_candidate)
 
     if not PE is None:
@@ -75,6 +85,7 @@ def total_participants(votes: np.ndarray) -> int:
 
     first_choice = votes[:, 0]
     first_choice = first_choice[np.logical_not(np.isnan(first_choice))]
+    first_choice = first_choice[first_choice != -1]
 
     return first_choice.shape[0]
 
@@ -86,7 +97,7 @@ def condorcet_winner(votes):
     x = 0
     y = 1
     while x != y:
-        partial_election = get_partial_elections(votes, [x, y])
+        partial_election = get_partial_elections_fast(votes, [x, y])
         out = strongest_candidate(partial_election)
         if out == x:
             y += 1

@@ -15,7 +15,7 @@ def vote_optimal(population, candidates, ranked_positions = -1) -> np.array:
     Calculate vote totals assuming everyone ranks ranked_positions (defaults to all), and rank
     based on closeness of political values.
     """
-    out = np.zeros((population.shape[0], candidates.shape[0]))
+    out = np.zeros((population.shape[0], candidates.shape[0]), dtype=np.int8)
     for i in range (len(population)):
         preference = population[i]
 
@@ -72,19 +72,19 @@ def vote_name_recognition(population, candidates, ranked_positions = -1) -> np.a
 #@njit(parallel = True)
 def vote_cost_benefit(population, candidates, pop_duty, ranked_positions = -1, c_0 = .5, dc = .1, F = 0.02) -> np.array:
 
-    out = np.zeros( ( population.shape[0], candidates.shape[0] ) )
+    out = np.zeros( ( population.shape[0], candidates.shape[0] ),  dtype=np.int8)
     for i in range(len(population)):
         preference = population[i]
         r = frobenius_norm(candidates - preference)
         candidates_preference_order = np.argsort(r)
 
-        votes = np.full(candidates.shape[0], np.nan)
+        votes = np.full(candidates.shape[0], -1, dtype=np.int8)
 
         for c in range(len(candidates_preference_order)):
-            if c == 0 and pop_duty[i] + F / r[c] > c_0:
+            if c == 0 and pop_duty[i] + F / r[candidates_preference_order[c]] > c_0:
                 votes[c] = candidates_preference_order[c]
                 continue
-            elif c != 0 and pop_duty[i] + F / r[c] > c * dc:
+            elif c != 0 and pop_duty[i] + F / r[candidates_preference_order[c]] > c * dc:
                 votes[c] = candidates_preference_order[c]
                 continue
             else:

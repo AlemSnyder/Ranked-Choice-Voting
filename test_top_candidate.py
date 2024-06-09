@@ -1,5 +1,5 @@
 import src.population_preff as pref
-import src.plotting_graphs as analyze
+import src.vote_analysis as analyze
 import src.vote_tallie as tale
 
 import json
@@ -13,7 +13,7 @@ json_data["First_Past_Post"] = {}
 population_size = 1000
 
 
-N = 1000
+N = 100
 
 
 for candidate_size in range(3, 11):
@@ -40,7 +40,7 @@ for candidate_size in range(3, 11):
 
             electorate_average = pop.mean(axis=0)
 
-            first_round = analyze.get_partial_elections(votes, candidate_ids)
+            first_round = analyze.get_partial_elections_fast(votes, candidate_ids)
             first_round_ranked_candidates = [x for x in first_round.keys()]
             first_round_ranked_candidates.sort(key = lambda x : first_round[x], reverse=True)
 
@@ -58,8 +58,8 @@ for candidate_size in range(3, 11):
             json_data["Ranked_Choice"][candidate_size][preferences] = position
             json_data["First_Past_Post"][candidate_size][preferences] = top_candidate_position
 
-        with open('data/Uniform_All_Candidates.json', 'w+', encoding='utf-8') as f:
-            json.dump(json_data, f, ensure_ascii=False, indent=4)
+    with open('data/Uniform_All_Candidates.json', 'w+', encoding='utf-8') as f:
+        json.dump(json_data, f, ensure_ascii=False, indent=4)
 
 
 json_data = {}
@@ -91,7 +91,7 @@ for candidate_size in range(3, 11):
 
             electorate_average = pop.mean(axis=0)
 
-            first_round = analyze.get_partial_elections(votes, candidate_ids)
+            first_round = analyze.get_partial_elections_fast(votes, candidate_ids)
             first_round_ranked_candidates = [x for x in first_round.keys()]
             first_round_ranked_candidates.sort(key = lambda x : first_round[x], reverse=True)
 
@@ -109,6 +109,6 @@ for candidate_size in range(3, 11):
             json_data["Ranked_Choice"][candidate_size][preferences] = position
             json_data["First_Past_Post"][candidate_size][preferences] = top_candidate_position
 
-        with open('data/Normal_3_Candidates.json', 'w+', encoding='utf-8') as f:
-            json.dump(json_data, f, ensure_ascii=False, indent=4)
+    with open('data/Normal_3_Candidates.json', 'w+', encoding='utf-8') as f:
+        json.dump(json_data, f, ensure_ascii=False, indent=4)
 

@@ -10,7 +10,7 @@ population_size = 1000
 
 #preferences = 3 # politics dimension
 
-N = 1000
+N = 100
 #total = 0 # number of runs where the top candidate wins out right
 # 80% of the time the first winner will stay the winner
 
@@ -19,6 +19,7 @@ N = 1000
 
 avg_votes_cast = []
 rc_mv = []
+rc_par = []
 fptp_mv = []
 
 num_candidates_vals = []
@@ -31,14 +32,14 @@ F_vals = []
 
 for _ in range(N):
 
-    num_candidates = np.random.randint(2, 22 + 1)
-    pol_dim = np.random.randint(1, 20)
-    pol_duty_max = np.random.uniform(0, 2)
+    num_candidates = np.random.randint(1, 15 + 1) + 2
+    pol_dim = np.random.randint(1, 5 + 1)
+    pol_duty_max = np.random.uniform(0, 1)
     ranked_positions = np.random.randint(2, 10 + 1)
     ranked_positions = max(ranked_positions, num_candidates)
     c_0 = np.random.uniform(0, 1)
     dc = np.random.uniform(0, .3)
-    F = np.random.uniform(0, 0.05)
+    F = np.random.uniform(0, 0.1)
 
     num_candidates_vals.append(num_candidates)
     pol_dim_vals.append(pol_dim)
@@ -50,18 +51,14 @@ for _ in range(N):
 
     pop = pref.uniform_pref(population_size, pol_dim)
     pop_duty = np.random.uniform(0, pol_duty_max, population_size)
-    candidates = pref.uniform_pref(num_candidates, pol_dim)
 
-    votes = tale.vote_cost_benefit(pop, candidates, pop_duty, ranked_positions, c_0, dc, F)
+    candidates = np.append([np.ones(pol_dim) * 0.5], [np.ones(pol_dim) * -0.5], axis=0)
 
-    voters = votes[ np.logical_not(np.isnan(votes[:, 0])), :]
+    #candidates = pref.uniform_pref(num_candidates, pol_dim)
 
-    did_vote = voters * 0 + 1
-    did_vote[np.isnan(did_vote)] = 0
+    votes = tale.vote_cost_benefit(pop, candidates, pop_duty, 1, c_0, dc, F)
 
-    avg_votes_cast.append(did_vote.sum() / population_size)
-
-    candidate_ids = [x for x in range(num_candidates)]
+    candidate_ids = [x for x in range(2)] # there are 2 candidates originally
 
     first_round = analyze.get_partial_elections(votes, candidate_ids)
     first_round_ranked_candidates = [x for x in first_round.keys()]
@@ -69,10 +66,7 @@ for _ in range(N):
 
     top_candidate = first_round_ranked_candidates[0]
 
-    total_meaningful_votes = first_round[first_round_ranked_candidates[0]] + first_round[first_round_ranked_candidates[1]]
-    total_votes = 0
-    for key in first_round:
-        total_votes += first_round[key]
+    total_meaningful_votes = analyze.total_participants(votes)
 
     #print("Total Votes:", total_votes)
     #print("Percent of Population:", total_votes / population_size * 100)
@@ -84,12 +78,25 @@ for _ in range(N):
 
     # redo candidates
 
+    candidates = np.append(candidates, pref.uniform_pref(num_candidates - 2, pol_dim), axis = 0)
+
+    votes = tale.vote_cost_benefit(pop, candidates, pop_duty, ranked_positions, c_0, dc, F)
+
+    voters = votes[ np.logical_not(np.isnan(votes[:, 0])), :]
+
+    did_vote = voters * 0 + 1
+    did_vote[np.isnan(did_vote)] = 0
+
+    total_votes = analyze.total_participants(votes)
+    if total_votes != 0:
+        avg_votes_cast.append(did_vote.sum() / total_votes)
+    else:
+        avg_votes_cast.append(0)
+
     last_partial_election = {}
 
     ranked_choice_winner = analyze.analyze_election(votes, num_candidates, PE=last_partial_election)
     # get last partial election
-
-    total_votes = analyze.total_participants(votes)
 
     #print("Total Votes:", total_votes)
     #print("Percent of Population:", total_votes / population_size * 100)
@@ -102,12 +109,14 @@ for _ in range(N):
     #print("Percent of Meaningful Participation:", total_meaningful_votes / population_size * 100)
 
     rc_mv.append(total_meaningful_votes)
+    rc_par.append(total_votes)
 
 data = pd.DataFrame()
 
 data["Average Votes Cast"] = avg_votes_cast
-data["Ranked Choice Meaningful Votes"] = rc_mv
 data["Traditional Meaningful Votes"] = fptp_mv
+data["Ranked Choice Meaningful Votes"] = rc_mv
+data["Ranked Choice Total Participants"] = rc_par
 data["Number Candidates"] = num_candidates_vals
 data["Politics Dimension"] = pol_dim_vals
 data["Max Duty"] = pol_duty_max_vals
@@ -116,4 +125,24 @@ data["c_0"] = c_0_vals
 data["dc"] = dc_vals
 data["F"] = F_vals
 
+#data = data.drop( (data["Traditional Meaningful Votes"] > .9 * population_size).index )
+#data = data.drop( (data["Traditional Meaningful Votes"] < .1 * population_size).index )
+
+
+data["dif"] = data["Ranked Choice Meaningful Votes"] - data["Traditional Meaningful Votes"]
+
 data.to_csv("data/Vote_Totals_Data.csv", index=None)
+
+# plot candidates vs 2^dim * avg votes
+
+# added votes
+
+
+
+data["estimator"] = 1.5 ** data["Politics Dimension"] * data["Average Votes Cast"]
+
+data_1 = data[data["dif"] > 0]
+data_2 = data[data["dif"] < 0]
+
+data_1.to_csv("data/Votes_High_RC.csv", index=None)
+data_2.to_csv("data/Votes_High_TR.csv", index=None)
