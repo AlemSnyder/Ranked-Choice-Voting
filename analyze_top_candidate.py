@@ -1,6 +1,8 @@
 import json
 import pandas as pd
 
+TO_PERCENT = 1000 / 100 # 10
+
 def analyze_to_csv(f, file_path):
 
     Uniform = json.load(f)
@@ -22,7 +24,7 @@ def analyze_to_csv(f, file_path):
             rc_val = Uniform["Ranked_Choice"][key][pol_dim]["0"] # number of best winner
             fc_val = Uniform["First_Past_Post"][key][pol_dim]["0"] # number of best winner
 
-            data.append((rc_val - fc_val) / 100)
+            data.append((rc_val - fc_val) / TO_PERCENT)
 
         data_out[key] = data
 

@@ -10,7 +10,7 @@ population_size = 1000
 
 #preferences = 3 # politics dimension
 
-N = 100
+N = 10000
 #total = 0 # number of runs where the top candidate wins out right
 # 80% of the time the first winner will stay the winner
 
@@ -36,8 +36,8 @@ for _ in range(N):
     pol_dim = np.random.randint(1, 5 + 1)
     pol_duty_max = np.random.uniform(0, 1)
     ranked_positions = np.random.randint(2, 10 + 1)
-    ranked_positions = max(ranked_positions, num_candidates)
     c_0 = np.random.uniform(0, 1)
+    ranked_positions = max(ranked_positions, num_candidates)
     dc = np.random.uniform(0, .3)
     F = np.random.uniform(0, 0.1)
 
@@ -84,8 +84,11 @@ for _ in range(N):
 
     voters = votes[ np.logical_not(np.isnan(votes[:, 0])), :]
 
-    did_vote = voters * 0 + 1
-    did_vote[np.isnan(did_vote)] = 0
+    voters = votes[ votes[:, 0] == -1, :]
+
+    did_vote = np.ones_like(votes)
+    did_vote[votes == -1] = 0
+    did_vote[np.isnan(votes)] = 0
 
     total_votes = analyze.total_participants(votes)
     if total_votes != 0:
@@ -125,9 +128,10 @@ data["c_0"] = c_0_vals
 data["dc"] = dc_vals
 data["F"] = F_vals
 
-#data = data.drop( (data["Traditional Meaningful Votes"] > .9 * population_size).index )
-#data = data.drop( (data["Traditional Meaningful Votes"] < .1 * population_size).index )
+#data = data.drop( data[data["Traditional Meaningful Votes"] > (.9 * population_size) ].index )
+#data = data.drop( data[data["Traditional Meaningful Votes"] < (.1 * population_size) ].index )
 
+#print( (data["Traditional Meaningful Votes"] > (.9 * population_size) ) .index)
 
 data["dif"] = data["Ranked Choice Meaningful Votes"] - data["Traditional Meaningful Votes"]
 
@@ -138,11 +142,3 @@ data.to_csv("data/Vote_Totals_Data.csv", index=None)
 # added votes
 
 
-
-data["estimator"] = 1.5 ** data["Politics Dimension"] * data["Average Votes Cast"]
-
-data_1 = data[data["dif"] > 0]
-data_2 = data[data["dif"] < 0]
-
-data_1.to_csv("data/Votes_High_RC.csv", index=None)
-data_2.to_csv("data/Votes_High_TR.csv", index=None)
