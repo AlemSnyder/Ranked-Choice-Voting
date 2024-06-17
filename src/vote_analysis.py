@@ -3,8 +3,10 @@ from numba import njit
 
 if __name__ == "__main__":
     import plotting_graphs
+    from util import save_to_csv
 else:
     from . import plotting_graphs
+    from .util import save_to_csv
 
 def weakest_candidate(election_tally) -> int:
     candidate = -1
@@ -24,7 +26,7 @@ def strongest_candidate(election_tally) -> int:
             candidate = c
     return candidate
 
-def get_partial_elections(votes, runoff_candidates, pop = None, candidates = None, display = False):
+def get_partial_elections(votes, runoff_candidates, pop = None, candidates = None, display = False, path = None):
 
     partial_election = {x : 0 for x in runoff_candidates} # crate dictionary
     top_candidates = [] # who each voter is voting for if -1 then None
@@ -48,6 +50,13 @@ def get_partial_elections(votes, runoff_candidates, pop = None, candidates = Non
         if not pop is None and not candidates is None:
             plotting_graphs.plot_2D_political_position(pop, runoff_candidates, partial_election, candidates, top_candidates, True)
 
+    if not path is None:
+        votes = np.fromiter(partial_election.values(), dtype = float )
+        total_votes = votes.sum()
+
+        partial_percentage_election = {x : partial_election[x]/total_votes * 100 for x in partial_election}
+
+        save_to_csv(partial_percentage_election, path + f"{len(partial_election)}.csv")
 
     return partial_election
 
@@ -62,19 +71,19 @@ def get_partial_elections_fast(votes, runoff_candidates, pop = None, candidates 
 
     return partial_election
 
-def analyze_election(votes, num_candidates, pop = None, candidates = None, PE = None):
-    #num_voters, ballot_length = votes.shape
+def analyze_election(votes, num_candidates, pop = None, candidates = None, display = False, PE = None, path = None):
 
     runoff_candidates = [x for x in range(num_candidates)]
 
     partial_election = {}
     while len(runoff_candidates) > 1:
-        partial_election = get_partial_elections_fast(votes, runoff_candidates, pop, candidates)
+        partial_election = get_partial_elections(votes, runoff_candidates, pop, candidates, display=display, path=path)
             
         lowest_candidate = weakest_candidate(partial_election)
 
         runoff_candidates.remove(lowest_candidate)
 
+    # copy last runoff election into PE as output
     if not PE is None:
         for key in partial_election:
             PE[key] = partial_election[key]
